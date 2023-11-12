@@ -16,12 +16,13 @@ import signal
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import ORJSONResponse, StreamingResponse
 from fastapi.routing import APIRoute
-from server.endpoints import GenericEndpoints
+
+from components.endpoints import GenericEndpoints
 from model_handler import ModelHandler
 from utils.logging import setup_logging
 import utils.errors as errors
-from server.utils.middleware import TerminationHandlerMiddleware
-from server.utils.common import all_processes_dead
+from utils.middleware import TerminationHandlerMiddleware
+from utils.common import all_processes_dead
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import ClientDisconnect
@@ -106,7 +107,7 @@ class InferenceServer:
                 ),
                 APIRoute(
                     r"/generate",
-                    self._endpoints.generte,
+                    self._endpoints.generate,
                     methods=["POST"],
                     tags=["Model Access"],
                 ),

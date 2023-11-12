@@ -14,7 +14,7 @@ from starlette.requests import ClientDisconnect
 from starlette.responses import Response, StreamingResponse
 
 from model_handler import ModelHandler
-from server.utils.common import transform_keys
+from utils.common import transform_keys
 
 INFERENCE_SERVER_FAILED_FILE = Path("~/inference_server_crashed.txt").expanduser()
 

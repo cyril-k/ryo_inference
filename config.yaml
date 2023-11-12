@@ -1,0 +1,15 @@
+
+data_dir: data
+description: null
+environment_variables: {}
+hf_cache: []
+resources:
+  accelerator: null
+  cpu: '8'
+  memory: 16Gi
+  use_gpu: false
+runtime:
+  predict_concurrency: 1
+secrets: {}
+
+

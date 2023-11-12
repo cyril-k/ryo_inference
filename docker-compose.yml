@@ -1,0 +1,17 @@
+services:
+  embeddings_edpoint:
+    image: ryo_inference:latest
+    ports:
+      - "8087:8080"
+    volumes:
+      - ~/.cache/torch/sentence_transformers:/root/.cache/torch/sentence_transformers
+    environment:
+      - MODEL_NAME=${MODEL_NAME}
+      # - DEFAULT_MAX_LENGTH=${DEFAULT_MAX_LENGTH}
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #       - driver: nvidia
+    #         device_ids: ['0']
+    #         capabilities: [gpu]
