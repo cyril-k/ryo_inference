@@ -20,7 +20,7 @@ from server.endpoints import GenericEndpoints
 from model_handler import ModelHandler
 from utils.logging import setup_logging
 import utils.errors as errors
-from utils.termination_handler_middleware import TerminationHandlerMiddleware
+from server.utils.middleware import TerminationHandlerMiddleware
 from server.utils.common import all_processes_dead
 
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -84,6 +84,11 @@ class InferenceServer:
         self._model.start_load()
 
     def create_application(self):
+        """This method creates a FastAPI application with configuration for running model inference.
+
+        Returns:
+            FastAPI: configured FastAPI application
+        """
         app = FastAPI(
             title="RYO Inference Server",
             docs_url=None,
@@ -95,13 +100,15 @@ class InferenceServer:
                 APIRoute(r"/", lambda: True),
                 # readiness endpoint
                 APIRoute(
-                    r"/{model_name}", self._endpoints.model_running, tags=["V1"]
+                    r"/status", 
+                    self._endpoints.model_running, 
+                    tags=["Model Access"]
                 ),
                 APIRoute(
-                    r"/{model_name}:generate",
+                    r"/generate",
                     self._endpoints.generte,
                     methods=["POST"],
-                    tags=["V1"],
+                    tags=["Model Access"],
                 ),
             ],
             exception_handlers={
@@ -127,6 +134,8 @@ class InferenceServer:
         return app
 
     def start(self):
+        """This method configures and starts the Uvicorn server to serve the FastAPI application.
+        """
         cfg = uvicorn.Config(
             self.create_application(),
             host="0.0.0.0",
@@ -176,6 +185,9 @@ class InferenceServer:
         cfg.setup_event_loop()
 
         async def serve():
+            """Sets up a TCP socket, starts multiple Uvicorn servers (equal to the number of workers), 
+                and handles stop signals to shut down the servers gracefully.
+            """
             serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             serversocket.bind((cfg.host, cfg.port))
